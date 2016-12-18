@@ -37,11 +37,41 @@ const STYLESHEET = `
   .ne.r9 {
     display: none;
   }
+
+  /* Left navigation menu */
+  .fv.tTwEpb {
+    display: none;
+  }
+
+  /* Copied from inbox. Mark as important to override the styles when the left menu is open */
+
+  .bz {
+  	width:1200px !important;
+  	margin-left:auto !important;
+  	margin-right:auto !important;
+  }
+  @media (max-width:1800px) {
+  	.bz {
+  		width:66.66% !important;
+  	}
+  }
+  @media (max-width:1260px) {
+  	.bz {
+  		width:840px !important;
+  	}
+  }
+  @media (max-width:920px) {
+  	.bz {
+  		width:auto !important;
+  		margin-left:40px !important;
+  		margin-right:40px !important;
+  	}
+  }
 `
 
 const SCRIPTS = `
   function injectClick(selector) {
-    document.querySelectorAll(selector).item(0).click()
+    document.querySelector(selector).click()
   }
 
   function setText(selector, text) {
@@ -161,7 +191,7 @@ class WebView extends WebKit.WebView {
   }
 
   onReply(method, data) {
-    console.log(`<<< ${method}`)
+    console.log(`<<< ${method}: ${JSON.stringify(data)}`)
 
     switch (method) {
     case 'getUserAvatar':
@@ -187,6 +217,7 @@ class WebView extends WebKit.WebView {
   }
 
   onLoadChanged(webView, event, data) {
+    console.log(event, this.uri)
     switch (event) {
     case WebKit.LoadEvent.FINISHED:
       if (this.uri === 'https://inbox.google.com/') {
