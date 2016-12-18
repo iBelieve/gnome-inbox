@@ -17,21 +17,18 @@ class MainWindow extends Gtk.ApplicationWindow {
     }
 
     this.setTitlebar(this.getHeader())
-    this.add(this.getWebView())
+    this.add(this.getBody())
   }
 
   getTabBar() {
     let firstButton
 
     const tabButton = (label) => {
-      console.log('Creating button')
       const button = new Gtk.RadioButton({ label, drawIndicator: false })
       button.on('toggled', () => {
         if (button.active)
-          this.webView.click(`[title="${label}"]`)
+          this.webView.selectView(label)
       })
-
-      console.log('Creating tab group')
 
       if (firstButton == null)
         firstButton = button
@@ -50,35 +47,73 @@ class MainWindow extends Gtk.ApplicationWindow {
     return buttonBox
   }
 
+  getSearchButton() {
+    this.searchButton = new Gtk.ToggleButton({ image: icon('edit-find-symbolic') })
+
+    this.searchButton.on('toggled', () => {
+      if (this.searchButton.getActive()) {
+        this.searchBar.setSearchMode(true)
+      } else {
+        this.searchBar.setSearchMode(false)
+      }
+    })
+
+    return this.searchButton
+  }
+
   getHeader() {
     const header = new Gtk.HeaderBar()
     header.title = 'Inbox'
     header.showCloseButton = true
 
-    const searchButton = new Gtk.Button({ image: icon('edit-find-symbolic') })
-
     const composeButton = new Gtk.Button({ label: 'Compose',
                                            image: icon('document-edit-symbolic') })
-    composeButton.on('clicked', () => this.webView.click('.y.hC'))
+    composeButton.on('clicked', () => this.webView.compose())
 
     this.profileButton = new Gtk.Button({ image: icon('open-menu-symbolic') })
 
     header.customTitle = this.getTabBar()
     header.packStart(composeButton)
     header.packEnd(this.profileButton)
-    header.packEnd(searchButton)
+    header.packEnd(this.getSearchButton())
 
     // header.getStyleContext().addClass("titlebar")
 
     return header
   }
 
+  getBody() {
+    this.content = new Gtk.Grid()
+    this.content.attach(this.getSearchBar(), 0, 0, 1, 1)
+    this.content.attach(this.getWebView(), 0, 1, 1, 1)
+
+    return this.content
+  }
+
+  getSearchBar() {
+    this.searchBar = new Gtk.SearchBar()
+
+    const searchEntry = new Gtk.SearchEntry({ widthRequest: 500 })
+    searchEntry.on('search-changed', () => {
+      this.webView.search(searchEntry.text)
+    })
+    searchEntry.on('stop-search', () => {
+      this.searchButton.active = false
+    })
+
+    this.searchBar.connectEntry(searchEntry)
+    this.searchBar.add(searchEntry)
+
+    return this.searchBar
+}
+
   getWebView() {
-    this.webView = new WebView({ userContentManager: new WebKit.UserContentManager() })
+    this.webView = new WebView({ userContentManager: new WebKit.UserContentManager(),
+                                 vexpand: true })
     this.webView.loadInbox()
     this.webView.on('avatar', (webView, data) => {
       console.log('Now setting button...', data)
-      this.profileButton.image
+
     })
 
     return this.webView

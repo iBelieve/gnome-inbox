@@ -32,6 +32,11 @@ const STYLESHEET = `
   #gtn-roster-iframe-id {
     display: none;
   }
+
+  /* Search suggestions */
+  .ne.r9 {
+    display: none;
+  }
 `
 
 const SCRIPTS = `
@@ -39,9 +44,19 @@ const SCRIPTS = `
     document.querySelectorAll(selector).item(0).click()
   }
 
+  function setText(selector, text) {
+    var elem = document.querySelector(selector)
+    var evt = document.createEvent("HTMLEvents")
+
+    elem.value = text
+
+    evt.initEvent("input", false, true)
+    elem.dispatchEvent(evt)
+  }
+
   function getUserAvatar() {
     try {
-      var elem = document.querySelectorAll('.gb_8a.gbii').item(0)
+      var elem = document.querySelector('.gb_8a.gbii')
       var css = window.getComputedStyle(elem)
       var url = css.backgroundImage.match(${/url\((.*)\)/})[1]
 
@@ -68,6 +83,8 @@ class WebView extends WebKit.WebView {
     this.setUpWebContext()
   }
 
+  /* Set up */
+
   setUpContentManager() {
     const contentManager = this.getUserContentManager()
 
@@ -93,6 +110,29 @@ class WebView extends WebKit.WebView {
     this.loadUri('https://inbox.google.com')
   }
 
+  /* Inbox actions */
+
+  selectView(title) {
+    this.click(`[title="${title}"]`)
+  }
+
+  compose() {
+    this.click('.y.hC')
+  }
+
+  getUserAvatar() {
+    this.exec('getUserAvatar()')
+  }
+
+  search(text) {
+    if (text)
+      this.setText('.gc.sp', text)
+    else
+      this.click('[title="Back"]')
+  }
+
+  /* Helper methods */
+
   exec(code) {
     console.log(`>>> ${code}`)
     this.runJavaScript(code, null, (webView, result) => {
@@ -104,8 +144,8 @@ class WebView extends WebKit.WebView {
     this.exec(`injectClick('${selector}')`)
   }
 
-  getUserAvatar() {
-    this.exec('getUserAvatar()')
+  setText(selector, text) {
+    this.exec(`setText(${JSON.stringify(selector)}, ${JSON.stringify(text)})`)
   }
 
   onReply(method, data) {
@@ -117,6 +157,8 @@ class WebView extends WebKit.WebView {
       break
     }
   }
+
+  /* Event listeners */
 
   onDecidePolicy(webView, policy, type) {
     switch(type) {
