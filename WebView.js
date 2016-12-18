@@ -116,6 +116,14 @@ class WebView extends WebKit.WebView {
     this.click(`[title="${title}"]`)
   }
 
+  showPreferences() {
+    this.trigger('global.app_settings_open')
+  }
+
+  showHelp() {
+    this.trigger('global.help')
+  }
+
   compose() {
     this.click('.y.hC')
   }
@@ -142,6 +150,10 @@ class WebView extends WebKit.WebView {
 
   click(selector) {
     this.exec(`injectClick('${selector}')`)
+  }
+
+  trigger(action) {
+    this.click(`[jsaction="${action}"]`)
   }
 
   setText(selector, text) {

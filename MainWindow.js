@@ -18,6 +18,8 @@ class MainWindow extends Gtk.ApplicationWindow {
 
     this.setTitlebar(this.getHeader())
     this.add(this.getBody())
+
+    this.setDefaultSize(1000, 750)
   }
 
   getTabBar() {

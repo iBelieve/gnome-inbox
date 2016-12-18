@@ -1,5 +1,5 @@
 #!/usr/bin/env jsgtk
-const App = require('./App')
+const Application = require('./Application')
 
-const app = new App()
+const app = new Application()
 app.run([])
