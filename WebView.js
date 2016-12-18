@@ -94,7 +94,7 @@ class WebView extends WebKit.WebView {
   }
 
   exec(code) {
-    console.log(`Executing: ${code}`)
+    console.log(`>>> ${code}`)
     this.runJavaScript(code, null, (webView, result) => {
       this.runJavaScriptFinish(result)
     })
@@ -109,9 +109,11 @@ class WebView extends WebKit.WebView {
   }
 
   onReply(method, data) {
+    console.log(`<<< ${method}`)
+
     switch (method) {
     case 'getUserAvatar':
-      console.log(data)
+      this.emit('avatar', this, data)
       break
     }
   }
