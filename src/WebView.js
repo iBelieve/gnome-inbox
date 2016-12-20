@@ -1,4 +1,6 @@
-const WebKit = require('WebKit2')
+const GLib = require('GLib'),
+      WebKit = require('WebKit2'),
+      DOM = require('./DOM')
 
 const CHANNEL = 'jsgtk'
 
@@ -106,6 +108,8 @@ class WebView extends WebKit.WebView {
   constructor({ userContentManager }) {
     super({ userContentManager })
 
+    this.dom = new DOM(this)
+
     this.on('load-changed', this.onLoadChanged.bind(this))
     this.on('decide-policy', this.onDecidePolicy.bind(this))
 
@@ -132,7 +136,7 @@ class WebView extends WebKit.WebView {
   setUpWebContext() {
     const context = this.getContext()
 
-    context.getCookieManager().setPersistentStorage(`${__dirname}/cookies.txt`,
+    context.getCookieManager().setPersistentStorage(`${App.dataDir}/cookies.txt`,
                                                     WebKit.CookiePersistentStorage.TEXT)
   }
 
@@ -143,52 +147,29 @@ class WebView extends WebKit.WebView {
   /* Inbox actions */
 
   selectView(title) {
-    this.click(`[title="${title}"]`)
+    this.dom.click(`[title="${title}"]`)
   }
 
   showPreferences() {
-    this.trigger('global.app_settings_open')
+    this.dom.triggerAction('global.app_settings_open')
   }
 
   showHelp() {
-    this.trigger('global.help')
+    this.dom.triggerAction('global.help')
   }
 
   compose() {
-    this.click('.y.hC')
-  }
-
-  getUserAvatar() {
-    this.exec('getUserAvatar()')
+    this.dom.click('.y.hC')
   }
 
   search(text) {
     if (text)
-      this.setText('.gc.sp', text)
+      this.dom.setValue('.gc.sp', text)
     else
-      this.click('[title="Back"]')
+      this.dom.click('[title="Back"]')
   }
 
   /* Helper methods */
-
-  exec(code) {
-    console.log(`>>> ${code}`)
-    this.runJavaScript(code, null, (webView, result) => {
-      this.runJavaScriptFinish(result)
-    })
-  }
-
-  click(selector) {
-    this.exec(`injectClick('${selector}')`)
-  }
-
-  trigger(action) {
-    this.click(`[jsaction="${action}"]`)
-  }
-
-  setText(selector, text) {
-    this.exec(`setText(${JSON.stringify(selector)}, ${JSON.stringify(text)})`)
-  }
 
   onReply(method, data) {
     console.log(`<<< ${method}: ${JSON.stringify(data)}`)
@@ -222,7 +203,6 @@ class WebView extends WebKit.WebView {
     case WebKit.LoadEvent.FINISHED:
       if (this.uri === 'https://inbox.google.com/') {
         console.log('Fully loaded!')
-        this.getUserAvatar()
       }
       break
     }

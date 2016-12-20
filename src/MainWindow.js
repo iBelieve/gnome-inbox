@@ -1,4 +1,5 @@
 const Gtk = require('Gtk'),
+      Gio = require('Gio'),
       WebKit = require('WebKit2'),
       WebView = require('./WebView')
 
@@ -63,6 +64,16 @@ class MainWindow extends Gtk.ApplicationWindow {
     return this.searchButton
   }
 
+  getMenuButton() {
+    const popMenu = new Gtk.Popover()
+    const menuButton = new Gtk.MenuButton({ image: icon('open-menu-symbolic') })
+    menuButton.setPopover(popMenu)
+    popMenu.setSizeRequest(-1, -1)
+    menuButton.setMenuModel(this.getMenu())
+
+    return menuButton
+  }
+
   getHeader() {
     const header = new Gtk.HeaderBar()
     header.title = 'Inbox'
@@ -72,16 +83,24 @@ class MainWindow extends Gtk.ApplicationWindow {
                                            image: icon('document-edit-symbolic') })
     composeButton.on('clicked', () => this.webView.compose())
 
-    this.profileButton = new Gtk.Button({ image: icon('open-menu-symbolic') })
-
     header.customTitle = this.getTabBar()
     header.packStart(composeButton)
-    header.packEnd(this.profileButton)
+    header.packEnd(this.getMenuButton())
     header.packEnd(this.getSearchButton())
 
     // header.getStyleContext().addClass("titlebar")
 
     return header
+  }
+
+  getMenu() {
+    const menu = new Gio.Menu()
+
+    const section1 = new Gio.Menu()
+    section1.append('Sign out', 'app.signOut')
+    menu.appendSection(null, section1)
+
+    return menu
   }
 
   getBody() {
@@ -107,7 +126,7 @@ class MainWindow extends Gtk.ApplicationWindow {
     this.searchBar.add(searchEntry)
 
     return this.searchBar
-}
+  }
 
   getWebView() {
     this.webView = new WebView({ userContentManager: new WebKit.UserContentManager(),

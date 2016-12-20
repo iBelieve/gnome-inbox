@@ -1,12 +1,13 @@
 const GLib = require('GLib'),
       Gio = require('Gio'),
       Gtk = require('Gtk'),
+      fs = require('fs'),
       MainWindow = require('./MainWindow'),
       utils = require('./utils')
 
 class Application extends Gtk.Application {
   constructor() {
-    super()
+    super({ applicationId: 'com.sonrisesoftware.GnomeInbox' })
 
     GLib.setPrgname('Inbox')
 
@@ -18,6 +19,12 @@ class Application extends Gtk.Application {
 
   onStartup() {
     global.App = this
+
+    this.dataDir = GLib.buildFilenamev([GLib.getUserDataDir(), "gnome-inbox"])
+
+    if (!GLib.fileTest(this.dataDir, GLib.FileTest.IS_DIR)) {
+      GLib.mkdirWithParents(this.dataDir, 0o775)
+    }
 
     this.mainWindow = new MainWindow({ application: this })
     this.appMenu = this.getAppMenu()
