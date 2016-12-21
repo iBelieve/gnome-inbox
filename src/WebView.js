@@ -72,35 +72,37 @@ const STYLESHEET = `
 `
 
 const SCRIPTS = `
-  function injectClick(selector) {
-    document.querySelector(selector).click()
-  }
+  var domHelper = {
+    click: function(selector) {
+      document.querySelector(selector).click()
+    },
 
-  function setText(selector, text) {
-    var elem = document.querySelector(selector)
-    var evt = document.createEvent("HTMLEvents")
+    setValue: function(selector, value) {
+      var elem = document.querySelector(selector)
+      var evt = document.createEvent("HTMLEvents")
 
-    elem.value = text
+      elem.value = value
 
-    evt.initEvent("input", false, true)
-    elem.dispatchEvent(evt)
-  }
+      evt.initEvent("input", false, true)
+      elem.dispatchEvent(evt)
+    },
 
-  function getUserAvatar() {
-    try {
-      var elem = document.querySelector('.gb_8a.gbii')
-      var css = window.getComputedStyle(elem)
-      var url = css.backgroundImage.match(${/url\((.*)\)/})[1]
+    getUserAvatar: function() {
+      try {
+        var elem = document.querySelector('.gb_8a.gbii')
+        var css = window.getComputedStyle(elem)
+        var url = css.backgroundImage.match(${/url\((.*)\)/})[1]
 
-      reply('getUserAvatar', url)
-    } catch (error) {
-      reply('getUserAvatar', 'Error: ' + error.message)
+        dom.reply('getUserAvatar', url)
+      } catch (error) {
+        dom.reply('getUserAvatar', 'Error: ' + error.message)
+      }
+    },
+
+    reply: function(method, data) {
+      // Webkit will be notified about a request change
+      location.href = '${CHANNEL}:' + encodeURIComponent(JSON.stringify({ method: method, data: data }))
     }
-  }
-
-  function reply(method, data) {
-    // Webkit will be notified about a request change
-    location.href = '${CHANNEL}:' + encodeURIComponent(JSON.stringify({ method: method, data: data }))
   }
 `
 
@@ -110,8 +112,8 @@ class WebView extends WebKit.WebView {
 
     this.dom = new DOM(this)
 
-    this.on('load-changed', this.onLoadChanged.bind(this))
-    this.on('decide-policy', this.onDecidePolicy.bind(this))
+    // this.on('load-changed', this.onLoadChanged.bind(this))
+    // this.on('decide-policy', this.onDecidePolicy.bind(this))
 
     this.setUpContentManager()
     this.setUpWebContext()
@@ -188,6 +190,8 @@ class WebView extends WebKit.WebView {
     case WebKit.PolicyDecisionType.NAVIGATION_ACTION:
       const uri = policy.getRequest().getUri()
 
+      console.log(uri)
+
       if (uri.indexOf(CHANNEL + ':') === 0) {
         const response = JSON.parse(decodeURIComponent(uri.slice(CHANNEL.length + 1)))
         policy.ignore()
@@ -195,6 +199,8 @@ class WebView extends WebKit.WebView {
       }
       break
     }
+
+    return false
   }
 
   onLoadChanged(webView, event, data) {
