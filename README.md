@@ -1,7 +1,13 @@
 GNOME Inbox
 ===========
 
+The goal is to provide a nice Linux alternative to [Boxy](http://www.boxyapp.co/) on macOS.
+
 ![Screenshot](screenshot.jpg)
+
+### Features
+
+ * GNOME headerbar with a compose button, folder switching, and search.
 
 ### Dependencies
 
