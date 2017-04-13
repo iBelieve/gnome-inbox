@@ -1,12 +1,11 @@
-const GLib = require('GLib'),
-      Gio = require('Gio'),
-      Gtk = require('Gtk'),
-      fs = require('fs'),
-      MainWindow = require('./MainWindow'),
-      utils = require('./utils')
+const GLib = require('GLib')
+const Gio = require('Gio')
+const Gtk = require('Gtk')
+const MainWindow = require('./MainWindow')
+const utils = require('./utils')
 
 class Application extends Gtk.Application {
-  constructor() {
+  constructor () {
     super({ applicationId: 'com.sonrisesoftware.GnomeInbox' })
 
     GLib.setPrgname('Inbox')
@@ -17,10 +16,10 @@ class Application extends Gtk.Application {
 
   /* Application lifecycle events */
 
-  onStartup() {
+  onStartup () {
     global.App = this
 
-    this.dataDir = GLib.buildFilenamev([GLib.getUserDataDir(), "gnome-inbox"])
+    this.dataDir = GLib.buildFilenamev([GLib.getUserDataDir(), 'gnome-inbox'])
 
     if (!GLib.fileTest(this.dataDir, GLib.FileTest.IS_DIR)) {
       GLib.mkdirWithParents(this.dataDir, 0o775)
@@ -32,31 +31,31 @@ class Application extends Gtk.Application {
     this.setUpActions()
   }
 
-  onActivate() {
+  onActivate () {
     this.mainWindow.showAll()
   }
 
   /* Application actions */
 
-  onActionQuit() {
+  onActionQuit () {
     this.mainWindow.destroy()
   }
 
-  onActionAbout() {
+  onActionAbout () {
     // TODO: Show an about dialog
   }
 
-  onActionHelp() {
+  onActionHelp () {
     this.mainWindow.webView.showHelp()
   }
 
-  onActionPreferences() {
+  onActionPreferences () {
     this.mainWindow.webView.showPreferences()
   }
 
   /* Set up methods */
 
-  setUpActions() {
+  setUpActions () {
     const actionEntries = [
       { name: 'preferences',
         callback: this.onActionPreferences.bind(this) },
@@ -73,7 +72,7 @@ class Application extends Gtk.Application {
     utils.populateActionGroup(this, actionEntries, 'app')
   }
 
-  getAppMenu() {
+  getAppMenu () {
     const menu = new Gio.Menu()
 
     const section1 = new Gio.Menu()

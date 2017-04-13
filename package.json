@@ -1,0 +1,23 @@
+{
+  "name": "gnome-inbox",
+  "version": "0.0.1",
+  "description": "GNOME app for Google Inbox",
+  "main": "src/index.js",
+  "repository": "iBelieve/gnome-inbox",
+  "author": "Michael Spencer <sonrisesoftware@gmail.com>",
+  "license": "GPL3.0+",
+  "private": true,
+  "scripts": {
+    "start": "jsgtk src/index.js",
+    "lint": "standard src/**/*.js --fix | snazzy"
+  },
+  "devDependencies": {
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.1"
+  },
+  "standard": {
+    "globals": [
+      "App"
+    ]
+  }
+}
