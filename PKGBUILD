@@ -1,7 +1,7 @@
 # Maintainer: Michael Spencer <sonrisesoftware@gmail.com>
 _pkgname=gnome-inbox
 pkgname=$_pkgname-git
-pkgver=r13.f684a58
+pkgver=r14.b824365
 pkgrel=1
 pkgdesc="GNOME wrapper for Inbox by Google"
 arch=('any')
@@ -21,5 +21,5 @@ pkgver() {
 
 package() {
 	cd "$_pkgname"
-	make prefix="$pkgdir/usr/" install
+	make DESTDIR="$pkgdir" install
 }

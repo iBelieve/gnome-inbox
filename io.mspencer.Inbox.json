@@ -1,7 +1,7 @@
 {
   "app-id": "io.mspencer.Inbox",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "3.24",
+  "runtime-version": "3.22",
   "sdk": "org.gnome.Sdk",
   "command": "gnome-inbox",
   "finish-args": [
