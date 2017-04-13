@@ -1,7 +1,7 @@
 {
   "app-id": "io.mspencer.Inbox",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "3.22",
+  "runtime-version": "3.24",
   "sdk": "org.gnome.Sdk",
   "command": "gnome-inbox",
   "finish-args": [
@@ -21,8 +21,8 @@
       "sources": [
         {
           "type": "archive",
-          "url": "https://webreflection.github.io/jsgtk/archive/jsgtk-0.11.2.tar.gz",
-          "sha256": "a8baa284025d6ed6ef57376591eab18f12888f36996a97765b2f6c067a0fbba0"
+          "url": "https://webreflection.github.io/jsgtk/archive/jsgtk-0.11.3.tar.gz",
+          "sha256": "c1f162eb1858ecd30ba96db2be977c42e3b43cb63afab001d23be6a5859fd0a2"
         }
       ]
     },
