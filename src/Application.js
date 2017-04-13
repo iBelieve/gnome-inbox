@@ -6,7 +6,7 @@ const utils = require('./utils')
 
 class Application extends Gtk.Application {
   constructor () {
-    super({ applicationId: 'com.sonrisesoftware.GnomeInbox' })
+    super({ applicationId: 'io.mspencer.Inbox' })
 
     GLib.setPrgname('Inbox')
 

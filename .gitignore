@@ -1,2 +1,4 @@
 cookies.txt
 node_modules
+build
+.flatpak-builder

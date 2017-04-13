@@ -11,12 +11,6 @@ class MainWindow extends Gtk.ApplicationWindow {
   constructor ({ application } = {}) {
     super({ application })
 
-    try {
-      this.setIconFromFile(`${__dirname}/inbox.png`)
-    } catch (error) {
-      this.setIconName('application-x-executable')
-    }
-
     this.setTitlebar(this.getHeader())
     this.add(this.getBody())
 

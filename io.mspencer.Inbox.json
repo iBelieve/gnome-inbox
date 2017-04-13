@@ -1,0 +1,43 @@
+{
+  "app-id": "io.mspencer.Inbox",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "3.24",
+  "sdk": "org.gnome.Sdk",
+  "command": "gnome-inbox",
+  "finish-args": [
+    "--socket=x11",
+    "--socket=wayland",
+    "--share=network"
+  ],
+  "modules": [
+    {
+      "name": "jsgtk",
+      "buildsystem": "simple",
+      "build-commands": [
+        "mkdir -p /app/lib/jsgtk",
+        "cp -r jsgtk_modules /app/lib/jsgtk",
+        "install -Dm755 jsgtk.sh /app/bin/jsgtk"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://webreflection.github.io/jsgtk/archive/jsgtk-0.11.2.tar.gz",
+          "sha256": "a8baa284025d6ed6ef57376591eab18f12888f36996a97765b2f6c067a0fbba0"
+        }
+      ]
+    },
+    {
+      "name": "inbox",
+      "buildsystem": "simple",
+      "build-commands": [
+        "make prefix=/app install"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "git://github.com/iBelieve/gnome-inbox.git"
+        }
+      ]
+    }
+  ]
+}
