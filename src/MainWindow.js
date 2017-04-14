@@ -1,7 +1,7 @@
 const Gtk = require('Gtk')
 const Gio = require('Gio')
 const WebKit = require('WebKit2')
-const WebView = require('./WebView')
+const InboxWebView = require('./InboxWebView')
 
 function icon (name) {
   return new Gtk.Image({ iconName: name, iconSize: Gtk.IconSize.SMALL_TOOLBAR })
@@ -125,12 +125,13 @@ class MainWindow extends Gtk.ApplicationWindow {
   }
 
   getWebView () {
-    this.webView = new WebView({ userContentManager: new WebKit.UserContentManager(),
-      vexpand: true })
-    this.webView.loadInbox()
-    this.webView.on('avatar', (webView, data) => {
-      console.log('Now setting button...', data)
+    this.webView = new InboxWebView({
+      userContentManager: App.webkitUserContent,
+      webContext: App.webkitContext,
+      settings: App.webkitSettings,
+      vexpand: true
     })
+    this.webView.loadInbox()
 
     return this.webView
   }

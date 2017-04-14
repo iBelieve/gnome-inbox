@@ -701,6 +701,10 @@ js-yaml@^3.5.1:
     argparse "^1.0.7"
     esprima "^3.1.1"
 
+jsgtk@^0.11.3:
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/jsgtk/-/jsgtk-0.11.3.tgz#e5a106e8ceb4a012fb3be0bb1520668b4f7c0f7f"
+
 json-stable-stringify@^1.0.0, json-stable-stringify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/json-stable-stringify/-/json-stable-stringify-1.0.1.tgz#9a759d39c5f2ff503fd5300646ed445f88c4f9af"
