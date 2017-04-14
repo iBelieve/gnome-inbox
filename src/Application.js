@@ -9,9 +9,11 @@ const utils = require('./utils')
 
 class Application extends Gtk.Application {
   constructor () {
-    super({ applicationId: 'io.mspencer.Inbox' })
+    super()
 
     GLib.setPrgname('Inbox')
+
+    this.applicationId = 'io.mspencer.Inbox'
 
     this.on('startup', this.onStartup.bind(this))
     this.on('activate', this.onActivate.bind(this))
@@ -145,6 +147,14 @@ class Application extends Gtk.Application {
   onNewMessages(data) {
     console.log('New messages!')
     console.log(data)
+
+    for (let message of data.newMessages) {
+      const notification = new Gio.Notification()
+      notification.setTitle(message.senderName)
+      notification.setBody(message.subject)
+
+      this.sendNotification(null, notification)
+    }
   }
 }
 
