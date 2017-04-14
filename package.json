@@ -13,7 +13,6 @@
     "package": "flatpak-builder build io.mspencer.Inbox.json --force-clean"
   },
   "devDependencies": {
-    "jsgtk": "^0.11.3",
     "snazzy": "^7.0.0",
     "standard": "^10.0.1"
   },
