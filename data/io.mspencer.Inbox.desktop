@@ -8,3 +8,4 @@ Terminal=false
 Type=Application
 StartupNotify=true
 Icon=io.mspencer.Inbox
+DBusActivatable=True
