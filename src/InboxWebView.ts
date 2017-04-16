@@ -1,10 +1,10 @@
-const WebKit = require('WebKit2')
-const DOM = require('./DOM')
+import * as WebKit from 'WebKit2'
+import DOM from './DOM'
 
 const CHANNEL = 'jsgtk'
 
-class InboxWebView extends WebKit.WebView {
-  constructor (options) {
+export default class InboxWebView extends WebKit.WebView {
+  constructor(options) {
     super(options)
 
     this.dom = new DOM(this)
@@ -14,29 +14,29 @@ class InboxWebView extends WebKit.WebView {
     this.on('needs-refresh', App.onNeedsRefresh.bind(App))
   }
 
-  loadInbox () {
+  loadInbox() {
     this.loadUri('https://inbox.google.com')
   }
 
   /* Inbox actions */
 
-  selectView (title) {
+  selectView(title) {
     this.dom.click(`[title="${title}"]`)
   }
 
-  showPreferences () {
+  showPreferences() {
     this.dom.triggerAction('global.app_settings_open')
   }
 
-  showHelp () {
+  showHelp() {
     this.dom.triggerAction('global.help')
   }
 
-  compose () {
+  compose() {
     this.dom.click('.y.hC')
   }
 
-  search (text) {
+  search(text) {
     if (text) {
       this.dom.setValue('.gc.sp', text)
     } else {
@@ -46,7 +46,7 @@ class InboxWebView extends WebKit.WebView {
 
   /* Event listeners */
 
-  onDecidePolicy (webView, policy, type) {
+  onDecidePolicy(webView, policy, type) {
     switch (type) {
       case WebKit.PolicyDecisionType.NAVIGATION_ACTION:
         const uri = policy.getRequest().getUri()
@@ -62,7 +62,7 @@ class InboxWebView extends WebKit.WebView {
     return false
   }
 
-  onLoadChanged (webView, event, data) {
+  onLoadChanged(webView, event, data) {
     switch (event) {
       case WebKit.LoadEvent.FINISHED:
         if (this.uri === 'https://inbox.google.com/') {
@@ -72,5 +72,3 @@ class InboxWebView extends WebKit.WebView {
     }
   }
 }
-
-module.exports = InboxWebView

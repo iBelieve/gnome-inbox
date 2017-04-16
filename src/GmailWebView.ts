@@ -1,9 +1,9 @@
-const WebKit = require('WebKit2')
+import * as WebKit from 'WebKit2'
 
 const CHANNEL = 'jsgtk'
 
-class GmailWebView extends WebKit.WebView {
-  constructor (options) {
+export default class GmailWebView extends WebKit.WebView {
+  constructor(options) {
     super(options)
 
     this.on('decide-policy', this.onDecidePolicy.bind(this))
@@ -11,11 +11,11 @@ class GmailWebView extends WebKit.WebView {
     this.on('new-messages', App.onNewMessages.bind(App))
   }
 
-  loadMail () {
+  loadMail() {
     this.loadUri('https://mail.google.com/mail/u/0/?ibxr=0')
   }
 
-  getNewMessages () {
+  getNewMessages() {
     this.runJavaScript(`getNewMessages()`, null, (webView, result) => {
       console.log(this.runJavaScriptFinish(result))
     })
@@ -23,7 +23,7 @@ class GmailWebView extends WebKit.WebView {
 
   /* Event listeners */
 
-  onDecidePolicy (webView, policy, type) {
+  onDecidePolicy(webView, policy, type) {
     switch (type) {
       case WebKit.PolicyDecisionType.NAVIGATION_ACTION:
         const uri = policy.getRequest().getUri()
@@ -39,7 +39,7 @@ class GmailWebView extends WebKit.WebView {
     return false
   }
 
-  onLoadChanged (webView, event, data) {
+  onLoadChanged(webView, event, data) {
     switch (event) {
       case WebKit.LoadEvent.FINISHED:
         if (this.uri.startsWith('https://mail.google.com/mail/u/')) {
@@ -49,5 +49,3 @@ class GmailWebView extends WebKit.WebView {
     }
   }
 }
-
-module.exports = GmailWebView

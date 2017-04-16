@@ -12,26 +12,17 @@
   "modules": [
     {
       "name": "jsgtk",
-      "buildsystem": "simple",
-      "build-commands": [
-        "mkdir -p /app/lib/jsgtk",
-        "cp -r jsgtk_modules /app/lib/jsgtk",
-        "install -Dm755 jsgtk.sh /app/bin/jsgtk"
-      ],
+      "buildsystem": "meson",
       "sources": [
         {
-          "type": "archive",
-          "url": "https://webreflection.github.io/jsgtk/archive/jsgtk-0.11.5.tar.gz",
-          "sha256": "b7bcaf3777357b157a6f54eeae65debadb9f73f43dadcf8e793904df34d8c1fb"
+          "type": "git",
+          "url": "git://github.com/iBelieve/jsgtk.git"
         }
       ]
     },
     {
       "name": "inbox",
-      "buildsystem": "simple",
-      "build-commands": [
-        "make prefix=/app install"
-      ],
+      "buildsystem": "meson",
       "sources": [
         {
           "type": "git",

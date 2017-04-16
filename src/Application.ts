@@ -1,14 +1,21 @@
-const fs = require('fs')
-const GLib = require('GLib')
-const Gio = require('Gio')
-const Gtk = require('Gtk')
-const WebKit = require('WebKit2')
-const MainWindow = require('./MainWindow')
-const GmailWebView = require('./GmailWebView')
-const utils = require('./utils')
+import * as fs from 'fs'
+import * as GLib from 'GLib'
+import * as Gio from 'Gio'
+import * as Gtk from 'Gtk'
+import * as WebKit from 'WebKit2'
+import MainWindow from './MainWindow'
+import GmailWebView from './GmailWebView'
+import * as utils from './utils'
 
-class Application extends Gtk.Application {
-  constructor () {
+export default class Application extends Gtk.Application {
+  mainWindow: MainWindow
+  webkitContext: WebKit.WebContext
+  webkitUserContent: WebKit.UserContent
+  webkitCookies: WebKit.CookieManager
+  webkitSettings: WebKit.Settings
+  gmail: GmailWebView
+
+  constructor() {
     super()
 
     GLib.setPrgname('Inbox')
@@ -21,7 +28,7 @@ class Application extends Gtk.Application {
 
   /* Application lifecycle events */
 
-  onStartup () {
+  onStartup() {
     global.App = this
 
     this.dataDir = GLib.buildFilenamev([GLib.getUserDataDir(), 'gnome-inbox'])
@@ -38,48 +45,56 @@ class Application extends Gtk.Application {
     this.setUpActions()
   }
 
-  onActivate () {
+  onActivate() {
     this.mainWindow.showAll()
   }
 
   /* Application actions */
 
-  onActionQuit () {
+  onActionQuit() {
     this.mainWindow.destroy()
   }
 
-  onActionAbout () {
+  onActionAbout() {
     // TODO: Show an about dialog
   }
 
-  onActionHelp () {
+  onActionHelp() {
     this.mainWindow.webView.showHelp()
   }
 
-  onActionPreferences () {
+  onActionPreferences() {
     this.mainWindow.webView.showPreferences()
   }
 
   /* Set up methods */
 
-  setUpActions () {
+  setUpActions() {
     const actionEntries = [
-      { name: 'preferences',
-        callback: this.onActionPreferences.bind(this) },
-      { name: 'quit',
+      {
+        name: 'preferences',
+        callback: this.onActionPreferences.bind(this)
+      },
+      {
+        name: 'quit',
         callback: this.onActionQuit.bind(this),
-        accels: ['<Primary>q'] },
-      { name: 'about',
-        callback: this.onActionAbout.bind(this) },
-      { name: 'help',
+        accels: ['<Primary>q']
+      },
+      {
+        name: 'about',
+        callback: this.onActionAbout.bind(this)
+      },
+      {
+        name: 'help',
         callback: this.onActionHelp.bind(this),
-        accels: ['F1'] }
+        accels: ['F1']
+      }
     ]
 
     utils.populateActionGroup(this, actionEntries, 'app')
   }
 
-  getAppMenu () {
+  getAppMenu() {
     const menu = new Gio.Menu()
 
     const section1 = new Gio.Menu()
@@ -97,28 +112,28 @@ class Application extends Gtk.Application {
 
   /* WebKit setup */
 
-  addWebKitStyleSheet (name, whitelist) {
-    const stylesheet = new WebKit.UserStyleSheet(fs.readFileSync(`${__dirname}/injected/${name}.css`, 'utf8'),
-                                                 WebKit.UserContentInjectedFrames.ALL_FRAMES,
-                                                 WebKit.UserStyleLevel.USER, whitelist, null)
+  addWebKitStyleSheet(name, whitelist) {
+    const stylesheet = new WebKit.UserStyleSheet(utils.getResource(`/io/mspencer/Inbox/webview/${name}.css`),
+      WebKit.UserContentInjectedFrames.ALL_FRAMES,
+      WebKit.UserStyleLevel.USER, whitelist, null)
     this.webkitUserContent.addStyleSheet(stylesheet)
   }
 
-  addWebKitScript (name, whitelist) {
-    const userScript = new WebKit.UserScript(fs.readFileSync(`${__dirname}/injected/${name}.js`, 'utf8'),
-                                             WebKit.UserContentInjectedFrames.ALL_FRAMES,
-                                             WebKit.UserScriptInjectionTime.START, whitelist, null)
+  addWebKitScript(name, whitelist) {
+    const userScript = new WebKit.UserScript(utils.getResource(`/io/mspencer/Inbox/webview/${name}.js`),
+      WebKit.UserContentInjectedFrames.ALL_FRAMES,
+      WebKit.UserScriptInjectionTime.START, whitelist, null)
     this.webkitUserContent.addScript(userScript)
   }
 
-  setUpWebKit () {
+  setUpWebKit() {
     this.webkitContext = new WebKit.WebContext()
     this.webkitUserContent = new WebKit.UserContentManager()
     this.webkitCookies = this.webkitContext.getCookieManager()
     this.webkitSettings = new WebKit.Settings()
 
     this.webkitCookies.setPersistentStorage(`${App.dataDir}/cookies.txt`,
-                                            WebKit.CookiePersistentStorage.TEXT)
+      WebKit.CookiePersistentStorage.TEXT)
 
     this.addWebKitStyleSheet('inbox', ['https://inbox.google.com/*'])
     this.addWebKitScript('inbox', ['https://inbox.google.com/*'])
@@ -157,5 +172,3 @@ class Application extends Gtk.Application {
     }
   }
 }
-
-module.exports = Application

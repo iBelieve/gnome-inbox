@@ -11,16 +11,17 @@ The goal is to provide a nice Linux alternative to [Boxy](http://www.boxyapp.co/
 
 ### Dependencies
 
- * [JSGtk+](https://github.com/WebReflection/jsgtk) (`jsgtk` from the AUR on Arch)
+ * [JSGtk+](https://github.com/iBelieve/jsgtk) (my fork)
    * JSGtk+ depends on [GJS](https://wiki.gnome.org/Projects/Gjs) (`gjs` on Arch)
  * [GTK+ 3](https://www.gtk.org/) (`gtk3` on Arch)
  * [WebKitGTK+ 2](https://webkitgtk.org/) (`webkit2gtk` on Arch)
 
-### Running
+### Building and installing
 
-No compile step necessary, just run:
-
-    jsgtk src/index.js
+    mkdir build; cd build
+    meson ..
+    ninja
+    ninja install # Use sudo if necessary
 
 ### Licensing
 
