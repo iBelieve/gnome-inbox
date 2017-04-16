@@ -1,5 +1,6 @@
 cookies.txt
 node_modules
 build
+package
 .flatpak-builder
 data/io.mspencer.Inbox.service

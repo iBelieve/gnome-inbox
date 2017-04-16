@@ -10,19 +10,11 @@
     "--share=network"
   ],
   "modules": [
-    {
-      "name": "jsgtk",
-      "buildsystem": "meson",
-      "sources": [
-        {
-          "type": "git",
-          "url": "git://github.com/iBelieve/jsgtk.git"
-        }
-      ]
-    },
+    "flatpak/jsgtk.json",
     {
       "name": "inbox",
       "buildsystem": "meson",
+      "builddir": true,
       "sources": [
         {
           "type": "git",

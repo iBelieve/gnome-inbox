@@ -10,7 +10,7 @@
   "scripts": {
     "start": "jsgtk src/index.js",
     "lint": "standard src/**/*.js --fix | snazzy",
-    "package": "flatpak-builder build io.mspencer.Inbox.json --force-clean"
+    "package": "flatpak-builder package io.mspencer.Inbox.json --force-clean"
   },
   "devDependencies": {
     "snazzy": "^7.0.0",

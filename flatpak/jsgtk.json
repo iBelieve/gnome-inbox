@@ -1,0 +1,53 @@
+{
+  "name": "jsgtk",
+  "buildsystem": "meson",
+  "builddir": true,
+  "cleanup": [
+    "/bin/jsgtk",
+    "/share/jsgtk/jsgtk.src.gresource"
+  ],
+  "sources": [
+    {
+      "type": "git",
+      "url": "git://github.com/iBelieve/jsgtk.git"
+    }
+  ],
+  "modules": [
+    {
+      "name": "nodejs",
+      "buildsystem": "simple",
+      "build-options": {
+        "build-args": [
+          "--share=network"
+        ]
+      },
+      "build-commands": [
+        "cp -r * /app/"
+      ],
+      "cleanup": [
+        "*"
+      ],
+      "post-install": [
+        "npm install -g typescript"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "only-arches": [
+            "x86_64"
+          ],
+          "url": "https://nodejs.org/dist/v7.9.0/node-v7.9.0-linux-x64.tar.xz",
+          "sha256": "d8910cf0dd90be84c07df179512cf2e36659a92726e67e8dc8bc8b457fe6e5ee"
+        },
+        {
+          "type": "archive",
+          "only-arches": [
+            "i686"
+          ],
+          "url": "https://nodejs.org/dist/v7.9.0/node-v7.9.0-linux-x86.tar.xz",
+          "sha256": "a1178015504b81d1a42d72feebf80e3e7c96f3ff64ef17157e22f886c7d29e64"
+        }
+      ]
+    }
+  ]
+}
