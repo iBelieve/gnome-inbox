@@ -6,13 +6,16 @@ use gtk::{Application, ApplicationWindow, Button, ButtonBox, HeaderBar, Grid, Or
 use webkit2gtk::{WebView, Settings, UserContentManager};
 use inbox;
 
-pub fn get_main_window(
+pub fn create_main_window(
     app: &Application,
     web_settings: &Settings,
     user_content: &UserContentManager,
 ) -> ApplicationWindow {
     let win = ApplicationWindow::new(app);
-    win.set_default_size(800, 600);
+    let container = Grid::new();
+    let webview = inbox::create_webview(web_settings, user_content);
+    let (searchbar, search_button) = create_search(&webview);
+    let headerbar = create_headerbar(&webview, &search_button);
 
     macro_rules! add_action {
         ($name:expr,$accelerators:expr,$callback:expr) => {
@@ -24,18 +27,14 @@ pub fn get_main_window(
         }
     }
 
-    let container = Grid::new();
-    let webview = inbox::get_webview(web_settings, user_content);
-    let (searchbar, search_button) = create_search(&webview);
-
     webview.set_vexpand(true);
 
     container.attach(&searchbar, 0, 0, 1, 1);
     container.attach(&webview, 0, 1, 1, 1);
-    win.add(&container);
 
-    let headerbar = get_headerbar(&webview, &search_button);
+    win.add(&container);
     win.set_titlebar(Some(&headerbar));
+    win.set_default_size(800, 600);
 
     add_action!(
         "preferences",
@@ -56,16 +55,15 @@ pub fn get_main_window(
     win
 }
 
-fn get_headerbar(webview: &WebView, search_button: &ToggleButton) -> HeaderBar {
+fn create_headerbar(webview: &WebView, search_button: &ToggleButton) -> HeaderBar {
     let headerbar = HeaderBar::new();
-    headerbar.set_title(Some("Inbox"));
-    headerbar.set_show_close_button(true);
-
+    let tabbar = create_tabbar(webview);
     let compose_button = Button::new_with_label("Compose");
+
     compose_button.connect_clicked(clone!(webview => move |_| inbox::open_composer(&webview)));
 
-    let tabbar: ButtonBox = get_tabbar(webview);
-
+    headerbar.set_title(Some("Inbox"));
+    headerbar.set_show_close_button(true);
     headerbar.pack_start(&compose_button);
     headerbar.pack_end(search_button);
     headerbar.set_custom_title(Some(&tabbar));
@@ -73,7 +71,7 @@ fn get_headerbar(webview: &WebView, search_button: &ToggleButton) -> HeaderBar {
     headerbar
 }
 
-fn get_tabbar(webview: &WebView) -> ButtonBox {
+fn create_tabbar(webview: &WebView) -> ButtonBox {
     let tabbar = ButtonBox::new(Orientation::Horizontal);
     tabbar.get_style_context().unwrap().add_class("linked");
 

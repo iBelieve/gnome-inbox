@@ -10,7 +10,7 @@ struct Message {
     data: Option<Value>,
 }
 
-pub fn get_webview(web_settings: &Settings, user_content: &UserContentManager) -> WebView {
+pub fn create_webview(web_settings: &Settings, user_content: &UserContentManager) -> WebView {
     let webview = WebView::new_with_user_content_manager(user_content);
     webview.set_settings(web_settings);
     webview.load_uri("https://inbox.google.com");
