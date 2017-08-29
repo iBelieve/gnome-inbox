@@ -1,16 +1,20 @@
 use gtk::prelude::*;
 use gtk::{Application, ApplicationWindow, Button, ButtonBox, HeaderBar, Grid, Orientation,
           RadioButton, SearchBar};
-use webkit2gtk::WebView;
+use webkit2gtk::{WebView, Settings, UserContentManager};
 use inbox;
 
-pub fn get_main_window(app: &Application) -> ApplicationWindow {
+pub fn get_main_window(
+    app: &Application,
+    web_settings: &Settings,
+    user_content: &UserContentManager,
+) -> ApplicationWindow {
     let win = ApplicationWindow::new(app);
     win.set_default_size(800, 600);
 
     let container = Grid::new();
     let searchbar = SearchBar::new();
-    let webview = inbox::get_webview();
+    let webview = inbox::get_webview(web_settings, user_content);
 
     webview.set_vexpand(true);
 

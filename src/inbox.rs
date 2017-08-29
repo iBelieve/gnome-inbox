@@ -1,7 +1,6 @@
 use dom;
 use gtk::Cast;
-use webkit2gtk::{LoadEvent, WebView, WebViewExt, PolicyDecisionType, PolicyDecisionExt,
-                 NavigationPolicyDecision, NavigationPolicyDecisionExt, URIRequestExt};
+use webkit2gtk::*;
 use serde_json::{self, Value};
 
 #[derive(Deserialize)]
@@ -10,8 +9,9 @@ struct Message {
     data: Value,
 }
 
-pub fn get_webview() -> WebView {
-    let webview = WebView::new();
+pub fn get_webview(web_settings: &Settings, user_content: &UserContentManager) -> WebView {
+    let webview = WebView::new_with_user_content_manager(user_content);
+    webview.set_settings(web_settings);
     webview.load_uri("https://inbox.google.com");
 
     webview.connect_decide_policy(|webview, policy, decision_type| {
@@ -48,7 +48,7 @@ pub fn open_composer(webview: &WebView) {
 }
 
 pub fn select_view(webview: &WebView, title: &str) {
-    dom::click(webview, &format!("title=\"{}\"", title));
+    dom::click(webview, &format!("[title=\"{}\"]", title));
 }
 
 pub fn search(webview: &WebView, text: &str) {
