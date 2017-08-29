@@ -6,7 +6,7 @@ pub fn click(webview: &WebView, selector: &str) {
 }
 
 pub fn trigger_action(webview: &WebView, action: &str) {
-    click(webview, &format!("[jsaction={}]", action));
+    click(webview, &format!("[jsaction=\"{}\"]", action));
 }
 
 pub fn set_value(webview: &WebView, selector: &str, value: &str) {

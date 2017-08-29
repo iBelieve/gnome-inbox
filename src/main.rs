@@ -33,6 +33,7 @@ mod window;
 use glib::get_user_data_dir;
 use gio::prelude::*;
 use gtk::prelude::*;
+use gio::{Menu, MenuExt};
 use gtk::Application;
 use webkit2gtk::*;
 use webkit2gtk::SettingsExt;
@@ -67,6 +68,11 @@ fn main() {
         data_dir.join("cookies.txt").to_str().unwrap(),
         CookiePersistentStorage::Text,
     );
+
+    app.connect_startup(|app| {
+        app.set_app_menu(&create_app_menu());
+        set_up_actions(&app);
+    });
 
     app.connect_activate(clone!(web_settings, user_content => move |app| {
         if let Some(win) = app.get_active_window() {
@@ -126,4 +132,43 @@ fn create_user_content() -> UserContentManager {
     }
 
     user_content
+}
+
+fn create_app_menu() -> Menu {
+    let menu = Menu::new();
+
+    let section1 = Menu::new();
+    section1.append("Preferences", "win.preferences");
+    menu.append_section(None, &section1);
+
+    let section2 = Menu::new();
+    section2.append("Help", "win.help");
+    section2.append("About", "app.about");
+    section2.append("Quit", "app.quit");
+    menu.append_section(None, &section2);
+
+    menu
+}
+
+fn set_up_actions(app: &Application) {
+    macro_rules! add_action {
+        ($name:expr,$accelerators:expr,$callback:expr) => {
+            let action = gio::SimpleAction::new($name, None);
+            action.connect_activate($callback);
+            app.add_action(&action);
+            app.set_accels_for_action(concat!("app.", $name), $accelerators);
+        }
+    }
+
+    add_action!(
+        "quit",
+        &["<Primary>Q"],
+        clone!(app => move |_, _| {
+        app.quit();
+    })
+    );
+
+    add_action!("about", &[], |_, _| {
+        // TODO: Show about dialog
+    });
 }

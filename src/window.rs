@@ -1,3 +1,5 @@
+use gio;
+use gio::prelude::*;
 use gtk::prelude::*;
 use gtk::{Application, ApplicationWindow, Button, ButtonBox, HeaderBar, Grid, Orientation,
           RadioButton, SearchBar};
@@ -12,6 +14,16 @@ pub fn get_main_window(
     let win = ApplicationWindow::new(app);
     win.set_default_size(800, 600);
 
+    macro_rules! add_action {
+        ($name:expr,$accelerators:expr,$callback:expr) => {
+            let action = gio::SimpleAction::new($name, None);
+            action.connect_activate($callback);
+            win.add_action(&action);
+
+            app.set_accels_for_action(concat!("win.", $name), $accelerators);
+        }
+    }
+
     let container = Grid::new();
     let searchbar = SearchBar::new();
     let webview = inbox::get_webview(web_settings, user_content);
@@ -24,6 +36,22 @@ pub fn get_main_window(
 
     let headerbar = get_headerbar(&webview);
     win.set_titlebar(Some(&headerbar));
+
+    add_action!(
+        "preferences",
+        &[],
+        clone!(webview => move |_, _| {
+        inbox::show_prefs(&webview);
+    })
+    );
+
+    add_action!(
+        "help",
+        &["F1"],
+        clone!(webview => move |_, _| {
+        inbox::show_help(&webview);
+    })
+    );
 
     win
 }
