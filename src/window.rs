@@ -2,7 +2,7 @@ use gio;
 use gio::prelude::*;
 use gtk::prelude::*;
 use gtk::{Application, ApplicationWindow, Button, ButtonBox, HeaderBar, Grid, Orientation,
-          RadioButton, SearchBar};
+          RadioButton, SearchBar, ToggleButton, Image, SearchEntry};
 use webkit2gtk::{WebView, Settings, UserContentManager};
 use inbox;
 
@@ -25,8 +25,8 @@ pub fn get_main_window(
     }
 
     let container = Grid::new();
-    let searchbar = SearchBar::new();
     let webview = inbox::get_webview(web_settings, user_content);
+    let (searchbar, search_button) = create_search(&webview);
 
     webview.set_vexpand(true);
 
@@ -34,7 +34,7 @@ pub fn get_main_window(
     container.attach(&webview, 0, 1, 1, 1);
     win.add(&container);
 
-    let headerbar = get_headerbar(&webview);
+    let headerbar = get_headerbar(&webview, &search_button);
     win.set_titlebar(Some(&headerbar));
 
     add_action!(
@@ -56,7 +56,7 @@ pub fn get_main_window(
     win
 }
 
-fn get_headerbar(webview: &WebView) -> HeaderBar {
+fn get_headerbar(webview: &WebView, search_button: &ToggleButton) -> HeaderBar {
     let headerbar = HeaderBar::new();
     headerbar.set_title(Some("Inbox"));
     headerbar.set_show_close_button(true);
@@ -67,6 +67,7 @@ fn get_headerbar(webview: &WebView) -> HeaderBar {
     let tabbar: ButtonBox = get_tabbar(webview);
 
     headerbar.pack_start(&compose_button);
+    headerbar.pack_end(search_button);
     headerbar.set_custom_title(Some(&tabbar));
 
     headerbar
@@ -103,4 +104,31 @@ fn get_tabbar(webview: &WebView) -> ButtonBox {
     }
 
     tabbar
+}
+
+fn create_search(webview: &WebView) -> (SearchBar, ToggleButton) {
+    let searchbar = SearchBar::new();
+    let search_entry = SearchEntry::new();
+    let search_button = ToggleButton::new();
+
+    search_entry.set_property_width_request(500);
+    search_entry.connect_search_changed(clone!(webview => move |entry| {
+        inbox::search(&webview, &entry.get_text().unwrap_or(String::new()));
+    }));
+    search_entry.connect_stop_search(clone!(search_button => move |_| {
+        search_button.set_active(false);
+    }));
+
+    searchbar.connect_entry(&search_entry);
+    searchbar.add(&search_entry);
+
+    search_button.set_image(&Image::new_from_icon_name(
+        "edit-find-symbolic",
+        2, /* IconSize::SmallToolbar */
+    ));
+    search_button.connect_toggled(clone!(searchbar => move |button| {
+        searchbar.set_search_mode(button.get_active());
+    }));
+
+    (searchbar, search_button)
 }

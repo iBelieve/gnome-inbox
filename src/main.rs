@@ -41,6 +41,8 @@ use window::get_main_window;
 use std::fs::DirBuilder;
 
 fn main() {
+    glib::set_prgname(Some("Inbox"));
+
     let app = Application::new("io.mspencer.Inbox", gio::APPLICATION_FLAGS_NONE)
         .expect("Failed to create application");
 
