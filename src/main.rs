@@ -7,6 +7,7 @@ extern crate serde;
 extern crate serde_derive;
 extern crate serde_json;
 extern crate webkit2gtk;
+extern crate percent_encoding;
 
 macro_rules! clone {
     (@param _) => ( _ );
@@ -44,8 +45,6 @@ fn main() {
 
     let data_dir = get_user_data_dir().unwrap().join("gnome-inbox");
 
-    println!("Data dir: {}", data_dir.to_str().unwrap());
-
     if !data_dir.exists() {
         DirBuilder::new().recursive(true).create(&data_dir).expect(
             "Unable to create data dir",
@@ -57,22 +56,26 @@ fn main() {
     let user_content = create_user_content();
     let web_settings = Settings::new();
 
-    web_settings.set_enable_developer_extras(true);
-    web_settings.set_enable_write_console_messages_to_stdout(true);
+    // Enable developer logging and features in debug builds
+    #[cfg(debug_assertions)]
+    {
+        web_settings.set_enable_developer_extras(true);
+        web_settings.set_enable_write_console_messages_to_stdout(true);
+    }
 
     cookie_manager.set_persistent_storage(
         data_dir.join("cookies.txt").to_str().unwrap(),
         CookiePersistentStorage::Text,
     );
 
-    app.connect_activate(
-        clone!(web_settings, user_content => move |app| if let Some(win) = app.get_active_window() {
-        win.present();
-    } else {
-        let win = get_main_window(app, &web_settings, &user_content);
-        win.show_all();
-    }),
-    );
+    app.connect_activate(clone!(web_settings, user_content => move |app| {
+        if let Some(win) = app.get_active_window() {
+            win.present();
+        } else {
+            let win = get_main_window(app, &web_settings, &user_content);
+            win.show_all();
+        }
+    }));
 
     app.run(&[]);
 }

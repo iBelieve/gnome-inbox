@@ -2,11 +2,12 @@ use dom;
 use gtk::Cast;
 use webkit2gtk::*;
 use serde_json::{self, Value};
+use percent_encoding::percent_decode;
 
 #[derive(Deserialize)]
 struct Message {
     action: String,
-    data: Value,
+    data: Option<Value>,
 }
 
 pub fn get_webview(web_settings: &Settings, user_content: &UserContentManager) -> WebView {
@@ -73,17 +74,17 @@ fn on_navigation_to_url(webview: &WebView, url: &str) -> bool {
         return false;
     }
 
-    let message = &url[6..];
+    let message = percent_decode(url[6..].as_bytes()).decode_utf8().unwrap();
 
-    match serde_json::from_str::<Message>(message) {
-        Ok(message) => on_message(webview, &message.action, &message.data),
+    match serde_json::from_str::<Message>(&message) {
+        Ok(message) => on_message(webview, &message.action, message.data),
         Err(_) => println!("WARNING: Unable to parse JSON message: {}", message),
     }
 
     true
 }
 
-fn on_message(webview: &WebView, action: &str, data: &Value) {
+fn on_message(webview: &WebView, action: &str, data: Option<Value>) {
     match action {
         "new-messages" => {
             // TODO: Fetch new messages and show notification
