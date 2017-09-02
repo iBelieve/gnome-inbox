@@ -47,7 +47,7 @@ class MessagesFeed {
 
     return this.getFeed().then(feed => {
       console.debug('got feed')
-      let unread = feed.querySelector('fullcount').textContent
+      let unread = parseInt(feed.querySelector('fullcount').textContent, 10)
       let newMessages = []
       for (let entry of feed.querySelectorAll('entry')) {
         let message = parseMessage(entry)

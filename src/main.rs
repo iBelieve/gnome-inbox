@@ -28,8 +28,10 @@ macro_rules! clone {
 
 mod app;
 mod dom;
+mod gmail;
 mod inbox;
 mod ui;
+mod webview;
 
 use app::create_app;
 use gio::prelude::*;

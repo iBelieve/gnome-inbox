@@ -61,7 +61,7 @@ const observer = new MutationObserver(mutations => {
 
   if (listitemAdded()) {
     console.log('list item added')
-    jsgtk.send('new-messages')
+    jsgtk.send('needs-refresh')
   }
 })
 
